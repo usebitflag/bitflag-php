@@ -19,7 +19,7 @@ bitflag-php/
 ├── src/
 │   ├── Evaluation/   # evaluation order, operators, bucketing, typed results
 │   ├── Protocol/     # snapshot parsing and validation
-│   └── Client/ Transport/ Cache/ Telemetry/   # added later (M13)
+│   └── Client/ Transport/ Cache/ Telemetry/   # SDK client modules
 ├── tests/            # Pest: Unit, Fixtures runner, Arch
 ├── composer.json     # require: php only
 ├── phpstan.neon

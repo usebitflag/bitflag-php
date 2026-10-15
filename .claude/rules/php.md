@@ -11,7 +11,7 @@
 ## Dependencies
 
 - `composer.json` requires `php` only. An architecture test asserts `BitFlag\` uses only PHP built-ins.
-- Adding a runtime dependency needs an explicit decision recorded in the `bitflag` decision register.
+- Adding a runtime dependency needs explicit approval from the maintainer first.
 
 ## Testing
 
