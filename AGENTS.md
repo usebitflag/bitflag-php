@@ -10,7 +10,7 @@ application uses it for simulation and publication checks. It must work without 
 The contract it implements is owned by `bitflag-protocol`. It is written independently of `bitflag-js`; both must pass
 the same fixtures.
 
-Design context lives in the `bitflag` repository (`docs/evaluation-and-sdk-protocol.md`, `docs/milestones/M1-protocol-and-evaluator.md`).
+Design context lives in the `bitflag` repository (`docs/evaluation-and-sdk-protocol.md`).
 
 ## Project Structure
 
@@ -37,7 +37,7 @@ Detailed rules: `.claude/rules/php.md` and `.claude/rules/git-workflow.md`.
 
 ## Commands
 
-Available once the skeleton lands (M0 step 3):
+Available once the skeleton lands:
 
 - `composer validate --strict`
 - `vendor/bin/pint --test`
