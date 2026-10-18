@@ -3,7 +3,7 @@
 ## Code style
 
 - Pint for formatting; PHPStan at level max. Four spaces for indentation.
-- `declare(strict_types=1);` in every file. Classes are `final` unless designed for extension.
+- `declare(strict_types=1);` in every file (Pint enforces it, and an architecture test checks it). Classes are `final` unless designed for extension.
 - Keep the public API small. Anything not meant for consumers lives in an `Internal` namespace
   (`BitFlag\Evaluation\Internal`, `BitFlag\Protocol\Internal`); the application must never import those.
 - 64-bit arithmetic for bucketing must be exact on 64-bit PHP; do not rely on floats.

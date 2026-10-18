@@ -20,7 +20,7 @@ bitflag-php/
 │   ├── Evaluation/   # evaluation order, operators, bucketing, typed results
 │   ├── Protocol/     # snapshot parsing and validation
 │   └── Client/ Transport/ Cache/ Telemetry/   # SDK client modules
-├── tests/            # Pest: Unit, Fixtures runner, Arch
+├── tests/            # Pest: Unit and Arch
 ├── composer.json     # require: php only
 ├── phpstan.neon
 └── pint.json
@@ -37,9 +37,10 @@ Detailed rules: `.claude/rules/php.md` and `.claude/rules/git-workflow.md`.
 
 ## Commands
 
-Available once the skeleton lands:
+PHP 8.3 or newer:
 
+- `composer install`
 - `composer validate --strict`
-- `vendor/bin/pint --test`
-- `vendor/bin/phpstan analyse`
-- `vendor/bin/pest`
+- `vendor/bin/pint --test` (use `vendor/bin/pint` to fix)
+- `vendor/bin/phpstan analyse` (level max, `src` only)
+- `vendor/bin/pest` (add `--group=arch` for architecture tests)
