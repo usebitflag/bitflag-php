@@ -1,10 +1,13 @@
-.DS_Store
-.idea/
-.vscode/
-.env
-/vendor/
-/node_modules/
-/dist/
 
+.DS_Store
 .claude/settings.local.json
+.env
+.idea/
+.phpunit.cache/
+.phpunit.result.cache
+.vscode/
+/composer.lock
+/dist/
+/node_modules/
+/vendor/
 CLAUDE.local.md
