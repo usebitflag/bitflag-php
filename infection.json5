@@ -1,0 +1,15 @@
+{
+    "$schema": "vendor/infection/infection/resources/schema.json",
+    "source": {
+        "directories": ["src/Evaluation", "src/Protocol"]
+    },
+    "testFramework": "pest",
+    "logs": {
+        "text": "build/infection/infection.log"
+    },
+    "mutators": {
+        "@default": true
+    },
+    "minMsi": 85,
+    "minCoveredMsi": 85
+}
