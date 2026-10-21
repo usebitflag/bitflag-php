@@ -45,7 +45,8 @@ final class JsonDecoder
     }
 
     /**
-     * Whether a decoded number is an integer value outside ±(2^53 - 1), however it was written.
+     * Whether a decoded number is not a safe number: an integer value outside ±(2^53 - 1), however it was written,
+     * or a literal too large for binary64 (which decodes to infinity).
      */
     public static function isUnsafeNumber(int|float $number): bool
     {
@@ -53,7 +54,7 @@ final class JsonDecoder
             return $number > self::MAX_SAFE_INTEGER || $number < -self::MAX_SAFE_INTEGER;
         }
 
-        return is_finite($number) && floor($number) === $number && abs($number) > self::MAX_SAFE_INTEGER;
+        return ! is_finite($number) || (floor($number) === $number && abs($number) > self::MAX_SAFE_INTEGER);
     }
 
     public static function isObject(mixed $value): bool

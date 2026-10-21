@@ -57,6 +57,8 @@ it('knows which numbers are outside the safe integer range', function (int|float
     expect(JsonDecoder::isUnsafeNumber($number))->toBe($unsafe);
 })->with([
     'zero' => [0, false],
+    'infinity' => [INF, true],
+    'negative infinity' => [-INF, true],
     'max safe' => [9007199254740991, false],
     'min safe' => [-9007199254740991, false],
     'one over' => [9007199254740992, true],
