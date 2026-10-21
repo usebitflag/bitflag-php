@@ -9,6 +9,7 @@ use BitFlag\Evaluation\Internal\Abort;
 use BitFlag\Evaluation\Internal\Decision;
 use BitFlag\Evaluation\Internal\FlagEvaluator;
 use BitFlag\Evaluation\Internal\Values\Instant;
+use BitFlag\Evaluation\Trace\EvaluationTrace;
 use BitFlag\Protocol\Model\Capability;
 use BitFlag\Protocol\Model\Flag;
 use BitFlag\Protocol\Model\FlagType;
@@ -66,13 +67,39 @@ final class Evaluator
             return $this->failure($flagKey, $fallback, Reason::Fallback, ErrorKind::TypeMismatch, $atMs);
         }
 
-        try {
-            $decision = $this->decide($flag, $context, $atMs);
-        } catch (Abort $abort) {
-            return $this->failure($flagKey, $fallback, Reason::Error, $abort->errorKind, $atMs);
+        return $this->evaluateFlag($flag, $context, $fallback, $options, $atMs);
+    }
+
+    /**
+     * Evaluates every flag of the snapshot as its declared type. There is no caller fallback, so a flag that cannot
+     * be served has a null value and a null variation key.
+     */
+    public function evaluateAll(Context $context, ?EvaluationOptions $options = null): AllFlagsResult
+    {
+        $options ??= EvaluationOptions::defaults();
+        $atMs = $this->millis($options->time ?? $this->clock->now());
+
+        $results = [];
+        foreach ($this->snapshot->flags as $key => $flag) {
+            $results[$key] = $context->isValid()
+                ? $this->evaluateFlag($flag, $context, null, $options, $atMs)
+                : $this->failure($key, null, Reason::Error, ErrorKind::InvalidContext, $atMs);
         }
 
-        return $this->served($flag, $decision, $options, $atMs);
+        return new AllFlagsResult($results, $this->snapshot->revision, $this->snapshot->generation);
+    }
+
+    private function evaluateFlag(Flag $flag, Context $context, mixed $fallback, EvaluationOptions $options, int $atMs): EvaluationResult
+    {
+        $evaluator = new FlagEvaluator($this->snapshot, $context, $atMs, $this->supportedCapabilities ?? self::supportedCapabilities(), $options->trace);
+
+        try {
+            $decision = $evaluator->decide($flag, [$flag->key]);
+        } catch (Abort $abort) {
+            return $this->failure($flag->key, $fallback, Reason::Error, $abort->errorKind, $atMs, $options->trace ? new EvaluationTrace($evaluator->steps()) : null);
+        }
+
+        return $this->served($flag, $decision, $options, $atMs, $options->trace ? new EvaluationTrace($evaluator->steps()) : null);
     }
 
     public function evaluateBoolean(string $flagKey, Context $context, bool $fallback, ?EvaluationOptions $options = null): EvaluationResult
@@ -95,14 +122,7 @@ final class Evaluator
         return $this->evaluate($flagKey, $context, FlagType::Json, $fallback, $options);
     }
 
-    private function decide(Flag $flag, Context $context, int $atMs): Decision
-    {
-        $evaluator = new FlagEvaluator($this->snapshot, $context, $atMs, $this->supportedCapabilities ?? self::supportedCapabilities());
-
-        return $evaluator->decide($flag, [$flag->key]);
-    }
-
-    private function served(Flag $flag, Decision $decision, EvaluationOptions $options, int $atMs): EvaluationResult
+    private function served(Flag $flag, Decision $decision, EvaluationOptions $options, int $atMs, ?EvaluationTrace $trace): EvaluationResult
     {
         return new EvaluationResult(
             $flag->key,
@@ -118,12 +138,13 @@ final class Evaluator
             $decision->allocationId,
             null,
             Instant::format($atMs),
+            $trace,
         );
     }
 
-    private function failure(string $flagKey, mixed $fallback, Reason $reason, ErrorKind $kind, int $atMs): EvaluationResult
+    private function failure(string $flagKey, mixed $fallback, Reason $reason, ErrorKind $kind, int $atMs, ?EvaluationTrace $trace = null): EvaluationResult
     {
-        return new EvaluationResult($flagKey, $fallback, null, $reason, null, null, $this->snapshot->revision, $this->snapshot->generation, null, null, null, $kind, Instant::format($atMs));
+        return new EvaluationResult($flagKey, $fallback, null, $reason, null, null, $this->snapshot->revision, $this->snapshot->generation, null, null, null, $kind, Instant::format($atMs), $trace);
     }
 
     private function millis(DateTimeImmutable $time): int
