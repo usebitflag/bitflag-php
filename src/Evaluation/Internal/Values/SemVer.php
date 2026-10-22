@@ -27,8 +27,15 @@ final readonly class SemVer
         private array $prerelease,
     ) {}
 
+    /** Longest SemVer string, in bytes, that is valid. */
+    private const MAX_LENGTH = 256;
+
     public static function parse(string $text): ?self
     {
+        if (strlen($text) > self::MAX_LENGTH) {
+            return null;
+        }
+
         $pattern = '/^(' . self::NUMBER . ')\.(' . self::NUMBER . ')\.(' . self::NUMBER . ')'
             . '(?:-(' . self::IDENTIFIER . '(?:\.' . self::IDENTIFIER . ')*))?'
             . '(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/D';

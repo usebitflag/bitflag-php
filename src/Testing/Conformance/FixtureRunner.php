@@ -306,6 +306,17 @@ final class FixtureRunner
             }
         }
 
+        $expectedSteps = $case->expectTraceSteps ?? null;
+        if (is_array($expectedSteps)) {
+            $trace = $actual['trace'] ?? null;
+            $names = is_array($trace) && is_array($trace['steps'] ?? null)
+                ? array_map(static fn(mixed $step): mixed => is_array($step) ? ($step['step'] ?? null) : null, array_values($trace['steps']))
+                : [];
+            if ($names !== $expectedSteps) {
+                $failures[] = 'trace steps: expected ' . json_encode($expectedSteps) . ', got ' . json_encode($names);
+            }
+        }
+
         return new Outcome($id, $name, $failures, $this->actual($result));
     }
 

@@ -47,9 +47,10 @@ it('rejects what is not a version', function (string $text) {
     'leading space' => ' 4.2.0', 'trailing space' => '4.2.0 ', 'trailing newline' => "4.2.0\n", 'underscore' => '4.2.0-rc_1',
     'non-ASCII digit' => "4.2.\u{0663}", 'plus sign' => '+4.2.0', 'negative' => '-1.2.3', 'accent' => "4.2.0-b\u{00E9}ta",
     'beyond the safe range' => '9007199254740992.0.0', 'far beyond' => '99999999999999999999.0.0',
+    'over 256 bytes' => '1.0.0-' . str_repeat('a', 251),
     'pre-release beyond the safe range' => '1.0.0-9007199254740992', 'empty' => '', 'text' => 'latest',
 ]);
 
 it('accepts valid forms', function (string $text) {
     expect(SemVer::parse($text))->not->toBeNull();
-})->with(['0.0.0', '1.2.3', '1.0.0-0', '1.0.0-0a', '1.0.0-alpha-1', '1.0.0+build.5', '1.0.0-rc.1+sha.5114f85', '9007199254740991.9007199254740991.9007199254740991', '1.0.0-9007199254740991']);
+})->with(['0.0.0', '1.2.3', '1.0.0-0', '1.0.0-0a', '1.0.0-alpha-1', '1.0.0+build.5', '1.0.0-rc.1+sha.5114f85', '9007199254740991.9007199254740991.9007199254740991', '1.0.0-9007199254740991', '256 bytes' => '1.0.0-' . str_repeat('a', 250)]);

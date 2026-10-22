@@ -143,7 +143,7 @@ final class FlagEvaluator
                 return new Decision($this->variation($flag, $rule->serve->variation), Reason::Rule, ruleId: $rule->id);
             }
             if ($rule->serve instanceof RolloutServe) {
-                return $this->rollout($flag, $rule->id, $rule->serve, $conditions);
+                return $this->rollout($flag, $rule->id, $rule->serve, $conditions, $record);
             }
 
             throw new Abort(ErrorKind::InvalidConfig);
@@ -159,7 +159,7 @@ final class FlagEvaluator
     /**
      * @param  list<ConditionTrace>|null  $conditions
      */
-    private function rollout(Flag $flag, string $ruleId, RolloutServe $rollout, ?array $conditions): Decision
+    private function rollout(Flag $flag, string $ruleId, RolloutServe $rollout, ?array $conditions, bool $record = false): Decision
     {
         $subject = $rollout->bucketBy === 'key' ? $this->context->key : ($this->context->attributes[$rollout->bucketBy] ?? null);
         if (! is_string($subject) || $subject === '') {
@@ -170,7 +170,7 @@ final class FlagEvaluator
         $slot = SlotSelector::select($rollout->slots, $bucket);
         $variation = $slot['variation'] ?? $rollout->remainderVariation ?? throw new Abort(ErrorKind::InvalidConfig);
 
-        if ($this->trace) {
+        if ($record) {
             // Replace the "matched" step of this rule with one that also names the bucket and the interval.
             array_pop($this->steps);
             $this->steps[] = new TraceStep('rule', 'matched', ruleId: $ruleId, conditions: $conditions, bucket: $bucket, slot: ['variation' => $variation, 'start' => $slot['start'], 'end' => $slot['end']]);

@@ -20,6 +20,9 @@ final class SegmentMatcher
     /** @var list<string> segments being evaluated, to stop a segment that refers back to itself */
     private array $active = [];
 
+    /** @var array<string, bool> membership already decided in this evaluation, so a shared segment is evaluated once */
+    private array $decided = [];
+
     /**
      * @param  array<string, Segment>  $segments
      */
@@ -30,21 +33,25 @@ final class SegmentMatcher
      */
     public function isMember(string $key): bool
     {
+        if (isset($this->decided[$key])) {
+            return $this->decided[$key];
+        }
+
         $segment = $this->segments[$key] ?? throw new Abort(ErrorKind::InvalidConfig);
         if (in_array($key, $this->active, true)) {
             throw new Abort(ErrorKind::InvalidConfig);
         }
 
         if ($this->listed($segment->exclude)) {
-            return false;
+            return $this->decided[$key] = false;
         }
         if ($this->listed($segment->include)) {
-            return true;
+            return $this->decided[$key] = true;
         }
 
         $this->active[] = $key;
         try {
-            return (new ConditionMatcher($this->context, $this->isMember(...)))->matches($segment->match);
+            return $this->decided[$key] = (new ConditionMatcher($this->context, $this->isMember(...)))->matches($segment->match);
         } finally {
             array_pop($this->active);
         }
