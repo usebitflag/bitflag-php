@@ -25,7 +25,9 @@
   "scripts": {
     "test": "pest",
     "lint": "pint --test",
-    "analyse": "phpstan analyse --memory-limit=1G"
+    "analyse": "phpstan analyse --memory-limit=1G",
+    "conformance": "php scripts/conformance-report.php",
+    "fetch-protocol": "scripts/fetch-protocol-fixtures.sh"
   },
   "minimum-stability": "stable",
   "prefer-stable": true,
@@ -33,5 +35,10 @@
     "laravel/pint": "^1.32",
     "pestphp/pest": "^4.7",
     "phpstan/phpstan": "^2.3"
+  },
+  "extra": {
+    "bitflag": {
+      "protocol": "0.1.0-alpha.1"
+    }
   }
 }
