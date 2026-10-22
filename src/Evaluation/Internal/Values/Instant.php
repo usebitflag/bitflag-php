@@ -55,6 +55,52 @@ final class Instant
         return $seconds * 1000 + $millis;
     }
 
+    /**
+     * The RFC 3339 UTC text of epoch milliseconds: seconds precision, and ".mmm" only when the milliseconds are not zero.
+     */
+    public static function format(int $epochMillis): string
+    {
+        $millis = $epochMillis % 1000;
+        $seconds = intdiv($epochMillis - $millis, 1000);
+        if ($millis < 0) {
+            $millis += 1000;
+            $seconds -= 1;
+        }
+        $days = intdiv($seconds - ($seconds % 86400 + 86400) % 86400, 86400);
+        $secondOfDay = $seconds - $days * 86400;
+
+        [$year, $month, $day] = self::civilFromDays($days);
+
+        return sprintf(
+            '%04d-%02d-%02dT%02d:%02d:%02d%sZ',
+            $year,
+            $month,
+            $day,
+            intdiv($secondOfDay, 3600),
+            intdiv($secondOfDay % 3600, 60),
+            $secondOfDay % 60,
+            $millis === 0 ? '' : sprintf('.%03d', $millis),
+        );
+    }
+
+    /**
+     * @return array{int, int, int}
+     */
+    private static function civilFromDays(int $days): array
+    {
+        $z = $days + 719468;
+        $era = intdiv($z >= 0 ? $z : $z - 146096, 146097);
+        $dayOfEra = $z - $era * 146097;
+        $yearOfEra = intdiv($dayOfEra - intdiv($dayOfEra, 1460) + intdiv($dayOfEra, 36524) - intdiv($dayOfEra, 146096), 365);
+        $dayOfYear = $dayOfEra - (365 * $yearOfEra + intdiv($yearOfEra, 4) - intdiv($yearOfEra, 100));
+        $mp = intdiv(5 * $dayOfYear + 2, 153);
+        $day = $dayOfYear - intdiv(153 * $mp + 2, 5) + 1;
+        $month = $mp < 10 ? $mp + 3 : $mp - 9;
+        $year = $yearOfEra + $era * 400 + ($month <= 2 ? 1 : 0);
+
+        return [$year, $month, $day];
+    }
+
     private static function daysInMonth(int $year, int $month): int
     {
         if ($month === 2) {
