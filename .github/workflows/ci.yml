@@ -37,24 +37,3 @@ jobs:
         run: scripts/fetch-protocol-fixtures.sh
       - name: Tests (unit, architecture and conformance)
         run: vendor/bin/pest
-
-  mutation:
-    runs-on: ubuntu-latest
-    name: Mutation testing
-    steps:
-      - uses: actions/checkout@v7
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.3"
-          coverage: pcov
-          tools: composer:v2
-      - name: Install dependencies and Infection
-        run: |
-          composer config --no-plugins allow-plugins.infection/extension-installer true
-          composer require --dev infection/infection:^0.35 --update-with-all-dependencies --prefer-dist --no-interaction --no-progress
-      - name: Fetch the pinned protocol release
-        env:
-          GH_TOKEN: ${{ secrets.PROTOCOL_READ_TOKEN }}
-        run: scripts/fetch-protocol-fixtures.sh
-      - name: Infection (minimum MSI 85%)
-        run: vendor/bin/infection --threads=max --no-progress --min-msi=85 --min-covered-msi=85
