@@ -35,10 +35,5 @@
     "laravel/pint": "^1.32",
     "pestphp/pest": "^4.7",
     "phpstan/phpstan": "^2.3"
-  },
-  "extra": {
-    "bitflag": {
-      "protocol": "0.1.0-alpha.1"
-    }
   }
 }
