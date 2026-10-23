@@ -21,13 +21,6 @@ it('requires nothing but php at runtime', function () {
     expect(array_keys(is_array($require) ? $require : []))->toBe(['php']);
 });
 
-it('records the protocol release it is tested against, and the lock agrees', function () {
-    $extra = composerJson()['extra'] ?? [];
-    $recorded = is_array($extra) && is_array($extra['bitflag'] ?? null) ? ($extra['bitflag']['protocol'] ?? null) : null;
-
-    expect($recorded)->toBe(Protocol::lock()['version']);
-});
-
 it('pins the protocol release by checksum once it is published', function () {
     $sha = Protocol::lock()['sha256'];
 

@@ -21,6 +21,7 @@ The evaluator is tested against the fixtures of a pinned `bitflag-protocol` rele
 
 ```bash
 scripts/fetch-protocol-fixtures.sh    # downloads, verifies the checksum and extracts to build/protocol/<version>
+scripts/pin-protocol.sh <version>    # pins a published release in protocol.lock.json
 vendor/bin/pest                       # unit, architecture and conformance tests
 composer conformance report.json      # writes what this evaluator did for every case, to compare with another one
 ```
