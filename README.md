@@ -15,6 +15,8 @@ vendor/bin/phpstan analyse
 vendor/bin/pest
 ```
 
+Before pushing, run `composer check`: it runs what CI runs on one PHP version (`composer validate --strict`, Pint, PHPStan, Pest). The conformance tests need the pinned release; see below.
+
 ## Conformance
 
 The evaluator is tested against the fixtures of a pinned `bitflag-protocol` release (`protocol.lock.json`).
