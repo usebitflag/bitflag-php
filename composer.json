@@ -24,6 +24,7 @@
   },
   "scripts": {
     "test": "pest",
+    "check": ["@composer validate --strict", "@lint", "@analyse", "@test"],
     "lint": "pint --test",
     "analyse": "phpstan analyse --memory-limit=1G",
     "conformance": "php scripts/conformance-report.php",
